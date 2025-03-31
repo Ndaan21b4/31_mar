@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Menu</title>
+    <style>
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        
+        .menu > li {
+            position: relative;
+            display: inline-block;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .submenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: #2980b9;
+            min-width: 150px;
+        }
+        
+        .submenu li {
+            padding: 8px;
+            background: #2980b9;
+            color: white;
+        }
+        
+        .menu > li:hover .submenu {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <ul class="menu" id="menu-container"></ul>
+
+    <script>
+        async function fetchMenu() {
+            try {
+                let response = await fetch("http://localhost:3000/menus");
+                let menuData = await response.json();
+                createMenu(menuData);
+            } catch (error) {
+                console.error("Error fetching menu:", error);
+            }
+        }
+
+        function createMenu(menuData) {
+            const menuContainer = document.getElementById("menu-container");
+            menuContainer.innerHTML = "";
+            
+            menuData.forEach(menuItem => {
+                let li = document.createElement("li");
+                li.innerHTML = `<a href="${menuItem.URL}" style="color:white; text-decoration:none;">${menuItem.text}</a>`;
+                
+                if (menuItem.children && menuItem.children.length > 0) {
+                    let subMenu = document.createElement("ul");
+                    subMenu.classList.add("submenu");
+                    
+                    menuItem.children.forEach(subItem => {
+                        let subLi = document.createElement("li");
+                        subLi.innerHTML = `<a href="${subItem.URL}" style="color:white; text-decoration:none;">${subItem.text}</a>`;
+                        subMenu.appendChild(subLi);
+                    });
+                    
+                    li.appendChild(subMenu);
+                }
+                
+                menuContainer.appendChild(li);
+            });
+        }
+
+        fetchMenu();
+    </script>
+</body>
+</html>
